@@ -48,7 +48,6 @@
 const template = Handlebars.compile(document.querySelector("#template").innerHTML);
 const mintTemplate = Handlebars.compile(document.querySelector("#mint-template").innerHTML);
 document.addEventListener("DOMContentLoaded", async () => {
-  await window.ethereum.send('eth_requestAccounts');
   let c = await fetch("box.json").then((r) => {
     return r.json()
   })
