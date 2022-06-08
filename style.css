@@ -21,7 +21,7 @@ body {
   font-family: Menlo, monaco;
 }
 .box {
-  max-width: 300px;
+  max-width: 350px;
   text-align: center;
 }
 .box > *, .minter > *{
@@ -60,6 +60,7 @@ h1 {
   font-size: 30px;
   box-sizing: border-box;
   letter-spacing: -1px;
+  text-align: left;
 }
 h1 a {
   color: white;
@@ -101,6 +102,8 @@ tr {
   padding: 5px 10px;
   text-align: center;
   cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 .btn.full {
   width: 100%;
