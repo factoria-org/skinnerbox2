@@ -22,7 +22,7 @@ body {
 }
 .box {
   max-width: 350px;
-  text-align: center;
+  text-align: left;
 }
 .box > *, .minter > *{
   display: block;
