@@ -21,7 +21,14 @@ const connect = async (config) => {
   });
   let provider = await web3Modal.connect();
   const web3 = new Web3(provider);
-  await f0.init({ web3: web3, contract: config.contract, network: config.network })
+  let cached = null
+  cached = await fetch("cached.json").then((res) => { return res.json() }).catch((e) => { })
+  await f0.init({
+    web3,
+    contract: config.contract,
+    network: config.network,
+    cached
+  })
   console.log("initialized")
-  return { f0, web3 }
+  return { f0, web3, cached }
 }

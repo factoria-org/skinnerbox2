@@ -27,6 +27,16 @@
     </tr>
   {{/each}}
   </table>
+  <div class='power'>
+    <div class='line'>
+      <div class='b'>verified contract</div>
+      <a target="_blank" href="{{etherscan}}">{{contract}}</a>
+    </div>
+    <div class='line'>
+      <div class='b'>collection explorer</div>
+      <a target="_blank" href="https://open.factoria.app/contract/#{{contract}}">Factoria</a>
+    </div>
+  </div>
   {{/if}}
 </script>
 <script>
@@ -36,14 +46,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     return r.json()
   })
   try {
-    let { f0, web3 } = await connect(config)
+    let { f0, web3, cached } = await connect(config)
+    let net = await web3.eth.getChainId()
+    let netPrefix = (net.toString() === "4" ? "rinkeby." : "")
+    let etherscan = `https://${netPrefix}etherscan.io/address/${config.contract}#code`
+
     const name = await f0.name()
     const symbol = await f0.symbol()
     const placeholder = await f0.placeholder()
     const invites = await f0.myInvites()
+    let image = (cached && cached[placeholder.converted.image] ? cached[placeholder.converted.image] : placeholder.converted.image)
     document.querySelector(".box").innerHTML = template({
       title: `${name} (${symbol}) Invite List`,
-      image: placeholder.converted.image,
+      image,
+      etherscan,
+      contract: config.contract,
       table: (Object.keys(invites).length > 0),
       items: Object.keys(invites).map((key, index) => {
         return {

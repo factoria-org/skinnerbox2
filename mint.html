@@ -12,6 +12,7 @@
 <script src="https://unpkg.com/@walletconnect/web3-provider/dist/umd/index.min.js"></script>
 <script src="https://unpkg.com/web3modal@1.9.5/dist/index.js"></script>
 <script src="connect.js"></script>
+<script src="handleerror.js"></script>
 <script id="template" type="text/x-handlebars-template">
   <img src="{{image}}">
   <h1><a href=".">{{title}}</a></h1>
@@ -29,6 +30,16 @@
   <div class='console'></div>
   <div class='loading hidden'>
     <i class="fa-solid fa-chevron-up fa-flip"></i> minting...
+  </div>
+  <div class='power'>
+    <div class='line'>
+      <div class='b'>verified contract</div>
+      <a target="_blank" href="{{etherscan}}">{{contract}}</a>
+    </div>
+    <div class='line'>
+      <div class='b'>collection explorer</div>
+      <a target="_blank" href="https://open.factoria.app/contract/#{{contract}}">Factoria</a>
+    </div>
   </div>
 </script>
 <script id="mint-template" type="text/x-handlebars-template">
@@ -55,8 +66,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     return r.json()
   })
   try {
-    let { f0, web3 } = await connect(c)
+    let { f0, web3, cached } = await connect(c)
     const { key, address } = f0.parseURL(location.href)
+
+    let net = await web3.eth.getChainId()
+    let netPrefix = (net.toString() === "4" ? "rinkeby." : "")
+    let etherscan = `https://${netPrefix}etherscan.io/address/${c.contract}#code`
+
     let invite = await f0.invite(key)
     let placeholder = await f0.placeholder()
     const name = await f0.name()
@@ -67,8 +83,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     for(let i=1; i<=invite.condition.converted.limit; i++) {
       items.push(i)
     }
+    let image = (cached && cached[placeholder.converted.image] ? cached[placeholder.converted.image] : placeholder.converted.image)
     document.querySelector(".box").innerHTML = template({
-      image: placeholder.converted.image,
+      image,
+      etherscan,
+      contract: c.contract,
       title: `${name} (${symbol})`,
       items: items.map((item) => { return { count: item } }),
       max: invite.condition.converted.limit,
@@ -100,7 +119,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           })
         } catch (e) {
           document.querySelector(".box").classList.add("hidden")
-          document.querySelector(".error").innerHTML = `${e.message.toLowerCase()}`
+          document.querySelector(".error").innerHTML = `${handleError(e.message)}`
         }
       }
     })
