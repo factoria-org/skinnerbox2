@@ -70,7 +70,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     const { key, address } = f0.parseURL(location.href)
 
     let net = await web3.eth.getChainId()
-    let netPrefix = (net.toString() === "4" ? "rinkeby." : "")
+    let n = {
+      1: "",
+      4: "rinkeby.",
+      5: "goerli."
+    }
+    let netPrefix = n[net]
     let etherscan = `https://${netPrefix}etherscan.io/address/${c.contract}#code`
 
     let invite = await f0.invite(key)
